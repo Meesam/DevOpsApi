@@ -1,8 +1,10 @@
+using DevOps.MailService.Models;
 using DevOpsApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using NETCore.MailKit.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,13 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme =  JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme =  JwtBearerDefaults.AuthenticationScheme;
 });
+
+// Add Email config
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+    .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 
 builder.Services.AddControllers();
