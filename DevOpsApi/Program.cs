@@ -20,6 +20,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.Configure<IdentityOptions>(opts=>opts.SignIn.RequireConfirmedEmail = true);
+
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {

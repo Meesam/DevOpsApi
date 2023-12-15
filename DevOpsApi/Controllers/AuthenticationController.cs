@@ -54,8 +54,15 @@ public class AuthenticationController:ControllerBase
                 }
 
                 await _userManager.AddToRoleAsync(user, role);
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                if (token != null)
+                {
+                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new {token, email=user.Email }, Request.Scheme);
+                    var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
+                    _emailService.SendEmail(message);
+                }
                 return StatusCode(StatusCodes.Status200OK,
-                        new Response { Status = "Success", Message = "User created successfully" });
+                        new Response { Status = "Success", Message = $"User created and send email to {user.Email} successfully" });
             }
             else
             {
@@ -69,12 +76,19 @@ public class AuthenticationController:ControllerBase
         
     }
 
-    [HttpGet]
-    public IActionResult TestMail()
-    {
-        var emailMessage = new Message(new string[] { "meesam.engineer@gmail.com" }, "Test Subject", "Test content");
-        _emailService.SendEmail(emailMessage);
-        return StatusCode(StatusCodes.Status200OK,
-                        new Response { Status = "Success", Message = "Mail send successfully" });
+    [HttpGet("ConfirmEmail")]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    { 
+      var user = await _userManager.FindByEmailAsync(email);
+      if(user != null)
+      {
+         var result = await _userManager.ConfirmEmailAsync(user, token);
+         if(result.Succeeded)
+         {
+            return StatusCode(StatusCodes.Status200OK,
+                 new Response { Status = "Success", Message = "Email varified successfully" });
+         }  
+      }
+      return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Enternal error" });
     }
 }
