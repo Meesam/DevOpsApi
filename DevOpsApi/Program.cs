@@ -1,10 +1,10 @@
 using DevOps.MailService.Models;
+using DevOps.MailService.Services;
 using DevOpsApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using NETCore.MailKit.Core;
+//using NETCore.MailKit.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 

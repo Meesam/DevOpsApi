@@ -1,3 +1,5 @@
+using DevOps.MailService.Models;
+using DevOps.MailService.Services;
 using DevOpsApi.Models;
 using DevOpsApi.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Identity;
@@ -12,13 +14,14 @@ public class AuthenticationController:ControllerBase
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
+
     
-    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailService emailService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _configuration = configuration;
+        _emailService = emailService;
     }
 
     [HttpPost]
@@ -64,5 +67,14 @@ public class AuthenticationController:ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden, new Response {Status = "Error", Message = "User cannot be null"});
         }
         
+    }
+
+    [HttpGet]
+    public IActionResult TestMail()
+    {
+        var emailMessage = new Message(new string[] { "meesam.engineer@gmail.com" }, "Test Subject", "Test content");
+        _emailService.SendEmail(emailMessage);
+        return StatusCode(StatusCodes.Status200OK,
+                        new Response { Status = "Success", Message = "Mail send successfully" });
     }
 }
