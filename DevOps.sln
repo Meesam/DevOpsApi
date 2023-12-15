@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOps.Models", "DevOps.Mod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOps.DataAccess", "DevOps.DataAccess\DevOps.DataAccess.csproj", "{5BE4ADFE-B776-4465-A533-EDCE5C5CF9E7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevOps.MailService", "DevOps.MailService\DevOps.MailService.csproj", "{3752BF64-BDF6-49D6-9474-05B2ACD96334}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{5BE4ADFE-B776-4465-A533-EDCE5C5CF9E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BE4ADFE-B776-4465-A533-EDCE5C5CF9E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BE4ADFE-B776-4465-A533-EDCE5C5CF9E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3752BF64-BDF6-49D6-9474-05B2ACD96334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3752BF64-BDF6-49D6-9474-05B2ACD96334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3752BF64-BDF6-49D6-9474-05B2ACD96334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3752BF64-BDF6-49D6-9474-05B2ACD96334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
