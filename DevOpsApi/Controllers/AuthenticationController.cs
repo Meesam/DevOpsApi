@@ -1,9 +1,14 @@
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
 using DevOpsApi.Models;
+using DevOpsApi.Models.Authentication.Login;
 using DevOpsApi.Models.Authentication.SignUp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace DevOpsApi.Controllers;
 
@@ -15,13 +20,16 @@ public class AuthenticationController:ControllerBase
     private readonly UserManager<IdentityUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailService _emailService;
+    private readonly IConfiguration _configuration;
 
     
-    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IEmailService emailService)
+    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, 
+        IEmailService emailService,  IConfiguration configuration)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _emailService = emailService;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -90,5 +98,59 @@ public class AuthenticationController:ControllerBase
          }  
       }
       return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Enternal error" });
+    }
+
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+    {
+        if (loginModel != null)
+        {
+            var user = await _userManager.FindByNameAsync(loginModel.UserName);
+            var password = await _userManager.CheckPasswordAsync(user,loginModel.Password);
+            if (user != null && password !=null)
+            {
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name,user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
+                };
+                var userRoles = await _userManager.GetRolesAsync(user);  
+                if(userRoles != null)
+                {
+                    foreach(var role in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, role));
+                    }
+                    var jwtToken = GetToken(authClaims);
+                    return Ok(new
+                    {
+                      token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                      expiration = jwtToken.ValidTo
+                    });
+                }
+
+            }
+            return Unauthorized();
+        }
+        else
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new Response { Status = "Error", Message = "User Name or Password cannot be null" });
+        }
+
+    }
+
+    private JwtSecurityToken GetToken(List<Claim> authClaims) 
+    {
+        var authSignInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secrete"]));
+
+        var token = new JwtSecurityToken(
+               issuer: _configuration["JWT:ValidIssuer"],
+               audience: _configuration["JWT:ValidAudience"],
+               expires: DateTime.Now.AddHours(1),
+               claims: authClaims,
+               signingCredentials:new SigningCredentials(authSignInKey, SecurityAlgorithms.HmacSha256)
+            );
+        return token;
     }
 }

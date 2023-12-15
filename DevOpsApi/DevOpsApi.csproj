@@ -29,8 +29,4 @@
       <ProjectReference Include="..\DevOps.Models\DevOps.Models.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models\Authentication\Login\" />
-    </ItemGroup>
-
 </Project>
