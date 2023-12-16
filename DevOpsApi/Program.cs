@@ -1,9 +1,12 @@
+using System.Text;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
 using DevOpsApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 //using NETCore.MailKit.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,15 +23,27 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.Configure<IdentityOptions>(opts=>opts.SignIn.RequireConfirmedEmail = true);
+builder.Services.Configure<IdentityOptions>(opts => opts.SignIn.RequireConfirmedEmail = true);
 
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme =  JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme =  JwtBearerDefaults.AuthenticationScheme;
-});
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+   {
+       options.SaveToken = true;
+       options.RequireHttpsMetadata = false;
+       options.TokenValidationParameters = new TokenValidationParameters()
+       {
+           ValidateIssuer = true,
+           ValidateAudience = true,
+           ValidAudience = builder.Configuration["JWT:ValidAudience"],
+           ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secrete"]))
+       };
+   });
 
 // Add Email config
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
@@ -41,7 +56,33 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth Api", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter the valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+  {
+       {
+         new OpenApiSecurityScheme
+         {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+         },
+         new string []{}
+       }
+  });
+});
 
 var app = builder.Build();
 
@@ -54,6 +95,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
