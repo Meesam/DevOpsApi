@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace DevOpsApi.Models;
+namespace DevOps.DataAccess;
 
 public class ApplicationDbContext: IdentityDbContext<IdentityUser>
 {

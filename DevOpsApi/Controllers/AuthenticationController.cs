@@ -1,8 +1,8 @@
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
-using DevOpsApi.Models;
-using DevOpsApi.Models.Authentication.Login;
-using DevOpsApi.Models.Authentication.SignUp;
+using DevOps.Models.Authentication.Login;
+using DevOps.Models.Authentication.SignUp;
+using DevOps.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -108,7 +108,7 @@ public class AuthenticationController:ControllerBase
         {
             var user = await _userManager.FindByNameAsync(loginModel.UserName);
             var password = await _userManager.CheckPasswordAsync(user,loginModel.Password);
-            if (user != null && password !=null)
+            if (user != null && password != null)
             {
                 var authClaims = new List<Claim>
                 {
@@ -126,7 +126,11 @@ public class AuthenticationController:ControllerBase
                     return Ok(new
                     {
                       token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                      expiration = jwtToken.ValidTo
+                      expiration = jwtToken.ValidTo,
+                      userId = user.Id,
+                      userName = user.UserName,
+                      email = user.Email,
+                      Roles = userRoles
                     });
                 }
 

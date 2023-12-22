@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DevOpsApi.Models.Authentication.SignUp;
+namespace DevOps.Models.Authentication.SignUp;
 
 public class RegisterUser
 {

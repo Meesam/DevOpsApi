@@ -1,7 +1,7 @@
 using System.Text;
+using DevOps.DataAccess;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
-using DevOpsApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
