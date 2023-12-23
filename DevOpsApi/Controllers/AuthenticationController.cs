@@ -36,24 +36,25 @@ public class AuthenticationController:ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterUser? registerUser, string role)
+    public async Task<IActionResult> Register([FromBody] RegisterUser? registerUser)
     {
         if (registerUser != null)
         {
-            
-            if (await _roleManager.RoleExistsAsync(role))
+            var token = await _userManagement.CreateUserWithTokenAsync(registerUser);
+            if (token.IsSuccess)
             {
-                var token = _userManagement.CreateUserWithTokenAsync(registerUser);
-                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new {token, email= registerUser.Email }, Request.Scheme);
+                
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new { token.Response, email = registerUser.Email }, Request.Scheme);
                 var message = new Message(new string[] { registerUser.Email }, "Confirmation email link", confirmationLink);
                 _emailService.SendEmail(message);
-                
+
                 return StatusCode(StatusCodes.Status200OK,
                         new Response { Status = "Success", Message = $"User created and send email to {registerUser.Email} successfully" });
             }
             else
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new Response { Status = "Error", Message = "Role not Exist" });
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response { Status = "Erroe", Message = $"User not created" });
             }
         }
         else

@@ -23,6 +23,25 @@ namespace DevOps.AuthenticationService.Services
             _emailService = emailService;
             _configuration = configuration;
         }
+
+        public async Task<ApiResponse<List<string>>> AssignRoleToUserAsync(IEnumerable<string> roles, IdentityUser user)
+        {
+            var assignedRole = new List<string>();
+            foreach(var role in roles) 
+            {
+              if (await _roleManager.RoleExistsAsync(role))
+              {
+                 if (!await _userManager.IsInRoleAsync(user, role))
+                 {
+                    await _userManager.AddToRoleAsync(user, role);
+                        assignedRole.Add(role);
+                 }
+              }
+            }
+
+            return new ApiResponse<List<string>> { IsSuccess = true, StatusCode = 200, Message = "Roles has been assign", Response = assignedRole };
+        }
+
         public async Task<ApiResponse<string>> CreateUserWithTokenAsync(RegisterUser registerUser)
         {
             if (registerUser != null)
