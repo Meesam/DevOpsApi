@@ -31,6 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DevOps.AuthenticationService\DevOps.AuthenticationService.csproj" />
       <ProjectReference Include="..\DevOps.DataAccess\DevOps.DataAccess.csproj" />
       <ProjectReference Include="..\DevOps.MailService\DevOps.MailService.csproj" />
       <ProjectReference Include="..\DevOps.Models\DevOps.Models.csproj" />

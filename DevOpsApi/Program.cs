@@ -1,4 +1,5 @@
 using System.Text;
+using DevOps.AuthenticationService.Services;
 using DevOps.DataAccess;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
@@ -61,6 +62,7 @@ var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserManagement,UserManagement>();
 
 
 
