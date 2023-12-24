@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DevOps.Models.AppModel
@@ -32,7 +33,12 @@ namespace DevOps.Models.AppModel
 
         public DateTime? ProjectEndDate { get; set; }
 
-        public List<ProjectItem> ProjectItems { get; set; } = new List<ProjectItem>();
+        public int CustomerId { get; set; }
+
+        [JsonIgnore]
+        public Customer? Customer { get; set; }
+
+        public List<ProjectItem>? ProjectItems { get; set; } = new List<ProjectItem>();
 
     }
 }
