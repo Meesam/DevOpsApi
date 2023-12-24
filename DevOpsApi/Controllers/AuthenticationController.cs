@@ -1,8 +1,10 @@
+using DevOps.AuthenticationService.Services;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
-using DevOpsApi.Models;
-using DevOpsApi.Models.Authentication.Login;
-using DevOpsApi.Models.Authentication.SignUp;
+using DevOps.Models.AppModel;
+using DevOps.Models.Authentication.Login;
+using DevOps.Models.Authentication.SignUp;
+using DevOps.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,64 +19,43 @@ namespace DevOpsApi.Controllers;
 
 public class AuthenticationController:ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
+    private readonly IUserManagement _userManagement ;
 
     
-    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, 
-        IEmailService emailService,  IConfiguration configuration)
+    public AuthenticationController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, 
+        IEmailService emailService,  IConfiguration configuration, IUserManagement userManagement)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _emailService = emailService;
         _configuration = configuration;
+        _userManagement = userManagement;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register([FromBody] RegisterUser? registerUser, string role)
+    public async Task<IActionResult> Register([FromBody] RegisterUser? registerUser)
     {
         if (registerUser != null)
         {
-            if (registerUser.Email != null)
+            var token = await _userManagement.CreateUserWithTokenAsync(registerUser);
+            if (token.IsSuccess)
             {
-                var userExist = await _userManager.FindByEmailAsync(registerUser.Email);
-                if (userExist != null)
-                {
-                    return StatusCode(StatusCodes.Status403Forbidden, new Response {Status = "Error", Message = "User already exist"});
-                }
-            }
+                
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new {token = token.Response, email = registerUser.Email }, Request.Scheme);
+                var message = new Message(new string[] { registerUser.Email }, "Confirmation email link", confirmationLink);
+                _emailService.SendEmail(message);
 
-            IdentityUser user = new()
-            {
-                Email = registerUser.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerUser.UserName
-            };
-
-            if (await _roleManager.RoleExistsAsync(role))
-            {
-                var result = await _userManager.CreateAsync(user, registerUser.Password);
-                if (!result.Succeeded)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response {Status = "Error", Message = "User failed to create"});
-                }
-
-                await _userManager.AddToRoleAsync(user, role);
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                if (token != null)
-                {
-                    var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new {token, email=user.Email }, Request.Scheme);
-                    var message = new Message(new string[] { user.Email }, "Confirmation email link", confirmationLink);
-                    _emailService.SendEmail(message);
-                }
                 return StatusCode(StatusCodes.Status200OK,
-                        new Response { Status = "Success", Message = $"User created and send email to {user.Email} successfully" });
+                        new Response { Status = "Success", Message = $"User created and send email to {registerUser.Email} successfully" });
             }
             else
             {
-                return StatusCode(StatusCodes.Status403Forbidden, new Response {Status = "Error", Message = "Role does not axist"});
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                        new Response { Status = "Erroe", Message = $"User not created" });
             }
         }
         else
@@ -108,7 +89,7 @@ public class AuthenticationController:ControllerBase
         {
             var user = await _userManager.FindByNameAsync(loginModel.UserName);
             var password = await _userManager.CheckPasswordAsync(user,loginModel.Password);
-            if (user != null && password !=null)
+            if (user != null && password != null)
             {
                 var authClaims = new List<Claim>
                 {
@@ -126,7 +107,13 @@ public class AuthenticationController:ControllerBase
                     return Ok(new
                     {
                       token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                      expiration = jwtToken.ValidTo
+                      expiration = jwtToken.ValidTo,
+                      userId = user.Id,
+                      userName = user.UserName,
+                      email = user.Email,
+                      Roles = userRoles,
+                        user.FirstName,
+                        user.LastName
                     });
                 }
 

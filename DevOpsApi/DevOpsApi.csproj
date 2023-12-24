@@ -7,6 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Migrations\**" />
+      <Content Remove="Migrations\**" />
+      <EmbeddedResource Remove="Migrations\**" />
+      <None Remove="Migrations\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.14" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
@@ -24,6 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DevOps.AuthenticationService\DevOps.AuthenticationService.csproj" />
       <ProjectReference Include="..\DevOps.DataAccess\DevOps.DataAccess.csproj" />
       <ProjectReference Include="..\DevOps.MailService\DevOps.MailService.csproj" />
       <ProjectReference Include="..\DevOps.Models\DevOps.Models.csproj" />

@@ -1,4 +1,4 @@
-namespace DevOpsApi.Models;
+namespace DevOps.Models.Response;
 
 public class Response
 {
