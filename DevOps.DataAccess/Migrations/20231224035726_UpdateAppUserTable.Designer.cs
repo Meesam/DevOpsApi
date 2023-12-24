@@ -4,6 +4,7 @@ using DevOps.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevOps.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231224035726_UpdateAppUserTable")]
+    partial class UpdateAppUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,7 +112,7 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppMenus");
+                    b.ToTable("appMenus");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.AppUser", b =>
@@ -420,6 +423,29 @@ namespace DevOps.DataAccess.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "133dc474-2788-4de7-ad6c-d6224b7f10ba",
+                            ConcurrencyStamp = "1",
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "dde76f08-d5b3-4567-9531-3ddfd6379e43",
+                            ConcurrencyStamp = "2",
+                            Name = "User",
+                            NormalizedName = "User"
+                        },
+                        new
+                        {
+                            Id = "d1a0bf26-b05b-4839-8d72-c847b6a695be",
+                            ConcurrencyStamp = "3",
+                            Name = "Client",
+                            NormalizedName = "Client"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

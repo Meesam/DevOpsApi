@@ -4,6 +4,7 @@ using DevOps.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevOps.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231224031045_ExtendIdentityUser")]
+    partial class ExtendIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace DevOps.DataAccess.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -76,8 +76,6 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CustomerId");
 
                     b.ToTable("Address");
@@ -109,7 +107,7 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppMenus");
+                    b.ToTable("appMenus");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.AppUser", b =>
@@ -239,9 +237,6 @@ namespace DevOps.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -275,8 +270,6 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CustomerId");
 
                     b.ToTable("EmailAddresses");
@@ -289,9 +282,6 @@ namespace DevOps.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
@@ -331,8 +321,6 @@ namespace DevOps.DataAccess.Migrations
                         .HasDefaultValueSql("getdate()");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.HasIndex("CustomerId");
 
@@ -530,10 +518,6 @@ namespace DevOps.DataAccess.Migrations
 
             modelBuilder.Entity("DevOps.Models.AppModel.Address", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserAddresses")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("DevOps.Models.AppModel.Customer", null)
                         .WithMany("AddressList")
                         .HasForeignKey("CustomerId");
@@ -541,10 +525,6 @@ namespace DevOps.DataAccess.Migrations
 
             modelBuilder.Entity("DevOps.Models.AppModel.EmailAddress", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserEmailAddress")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("DevOps.Models.AppModel.Customer", null)
                         .WithMany("EmailAddresses")
                         .HasForeignKey("CustomerId");
@@ -552,10 +532,6 @@ namespace DevOps.DataAccess.Migrations
 
             modelBuilder.Entity("DevOps.Models.AppModel.Project", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserProjects")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("DevOps.Models.AppModel.Customer", null)
                         .WithMany("Projects")
                         .HasForeignKey("CustomerId");
@@ -617,15 +593,6 @@ namespace DevOps.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DevOps.Models.AppModel.AppUser", b =>
-                {
-                    b.Navigation("UserAddresses");
-
-                    b.Navigation("UserEmailAddress");
-
-                    b.Navigation("UserProjects");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.Customer", b =>

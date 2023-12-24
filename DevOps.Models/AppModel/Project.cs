@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -32,5 +33,6 @@ namespace DevOps.Models.AppModel
         public DateTime? ProjectEndDate { get; set; }
 
         public List<ProjectItem> ProjectItems { get; set; } = new List<ProjectItem>();
+
     }
 }

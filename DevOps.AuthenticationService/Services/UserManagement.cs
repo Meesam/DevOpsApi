@@ -1,4 +1,5 @@
 ﻿using DevOps.MailService.Services;
+using DevOps.Models.AppModel;
 using DevOps.Models.Authentication.SignUp;
 using DevOps.Models.Response;
 using Microsoft.AspNetCore.Identity;
@@ -9,22 +10,18 @@ namespace DevOps.AuthenticationService.Services
     public class UserManagement : IUserManagement
     {
 
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IEmailService _emailService;
-        private readonly IConfiguration _configuration;
+        
 
 
-        public UserManagement(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager,
-            IEmailService emailService, IConfiguration configuration)
+        public UserManagement(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _emailService = emailService;
-            _configuration = configuration;
         }
 
-        public async Task<ApiResponse<List<string>>> AssignRoleToUserAsync(IEnumerable<string> roles, IdentityUser user)
+        public async Task<ApiResponse<List<string>>> AssignRoleToUserAsync(IEnumerable<string> roles, AppUser user)
         {
             var assignedRole = new List<string>();
             foreach(var role in roles) 
@@ -55,11 +52,13 @@ namespace DevOps.AuthenticationService.Services
                     }
                 }
 
-                IdentityUser user = new()
+                AppUser user = new()
                 {
                     Email = registerUser.Email,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = registerUser.UserName
+                    UserName = registerUser.UserName,
+                    FirstName = registerUser.FirstName,
+                    LastName = registerUser.LastName
                 };
 
                 if (await _roleManager.RoleExistsAsync(registerUser.Role))

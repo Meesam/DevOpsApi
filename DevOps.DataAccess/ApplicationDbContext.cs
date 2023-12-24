@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace DevOps.DataAccess;
 
-public class ApplicationDbContext: IdentityDbContext<IdentityUser>
+public class ApplicationDbContext: IdentityDbContext<AppUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options) { }
 
@@ -19,6 +19,8 @@ public class ApplicationDbContext: IdentityDbContext<IdentityUser>
     public DbSet<Project> Projects { get; set; }
 
     public DbSet<ProjectItem> ProjectItems { get; set; }
+
+    public DbSet<AppMenu> AppMenus { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,8 +63,9 @@ public class ApplicationDbContext: IdentityDbContext<IdentityUser>
         modelBuilder.Entity<ProjectItem>()
             .Property(b => b.UpdatedDate)
             .HasDefaultValueSql("getdate()");
-        base.OnModelCreating(modelBuilder);
-    }
 
-    
+
+        base.OnModelCreating(modelBuilder);
+ 
+    }
 }

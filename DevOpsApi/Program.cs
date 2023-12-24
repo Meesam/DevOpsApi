@@ -1,8 +1,11 @@
 using System.Text;
 using DevOps.AuthenticationService.Services;
 using DevOps.DataAccess;
+using DevOps.DataAccess.AppService.Implementation;
+using DevOps.DataAccess.AppService.Interfaces;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
+using DevOps.Models.AppModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +34,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // For Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
@@ -63,6 +66,7 @@ var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserManagement,UserManagement>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
 
 

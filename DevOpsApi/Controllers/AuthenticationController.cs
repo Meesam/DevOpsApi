@@ -1,6 +1,7 @@
 using DevOps.AuthenticationService.Services;
 using DevOps.MailService.Models;
 using DevOps.MailService.Services;
+using DevOps.Models.AppModel;
 using DevOps.Models.Authentication.Login;
 using DevOps.Models.Authentication.SignUp;
 using DevOps.Models.Response;
@@ -18,14 +19,14 @@ namespace DevOpsApi.Controllers;
 
 public class AuthenticationController:ControllerBase
 {
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IEmailService _emailService;
     private readonly IConfiguration _configuration;
     private readonly IUserManagement _userManagement ;
 
     
-    public AuthenticationController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, 
+    public AuthenticationController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, 
         IEmailService emailService,  IConfiguration configuration, IUserManagement userManagement)
     {
         _userManager = userManager;
@@ -44,7 +45,7 @@ public class AuthenticationController:ControllerBase
             if (token.IsSuccess)
             {
                 
-                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new { token.Response, email = registerUser.Email }, Request.Scheme);
+                var confirmationLink = Url.Action(nameof(ConfirmEmail), "Authentication", new {token = token.Response, email = registerUser.Email }, Request.Scheme);
                 var message = new Message(new string[] { registerUser.Email }, "Confirmation email link", confirmationLink);
                 _emailService.SendEmail(message);
 
@@ -110,7 +111,9 @@ public class AuthenticationController:ControllerBase
                       userId = user.Id,
                       userName = user.UserName,
                       email = user.Email,
-                      Roles = userRoles
+                      Roles = userRoles,
+                        user.FirstName,
+                        user.LastName
                     });
                 }
 
