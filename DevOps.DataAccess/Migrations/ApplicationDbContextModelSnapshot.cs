@@ -35,9 +35,6 @@ namespace DevOps.DataAccess.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("City")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -48,7 +45,7 @@ namespace DevOps.DataAccess.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsCurrentAddress")
@@ -76,11 +73,9 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.AppMenu", b =>
@@ -93,6 +88,9 @@ namespace DevOps.DataAccess.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -109,7 +107,9 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppMenus");
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("AppMenus", (string)null);
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.AppUser", b =>
@@ -228,7 +228,7 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.EmailAddress", b =>
@@ -239,15 +239,12 @@ namespace DevOps.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -275,11 +272,9 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("EmailAddresses");
+                    b.ToTable("EmailAddresses", (string)null);
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.Project", b =>
@@ -290,15 +285,12 @@ namespace DevOps.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getdate()");
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -332,11 +324,9 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.ProjectItem", b =>
@@ -375,7 +365,7 @@ namespace DevOps.DataAccess.Migrations
                     b.Property<int>("ParentItem")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -392,7 +382,7 @@ namespace DevOps.DataAccess.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectItems");
+                    b.ToTable("ProjectItems", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -530,42 +520,57 @@ namespace DevOps.DataAccess.Migrations
 
             modelBuilder.Entity("DevOps.Models.AppModel.Address", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserAddresses")
-                        .HasForeignKey("AppUserId");
-
-                    b.HasOne("DevOps.Models.AppModel.Customer", null)
+                    b.HasOne("DevOps.Models.AppModel.Customer", "Customer")
                         .WithMany("AddressList")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("DevOps.Models.AppModel.AppMenu", b =>
+                {
+                    b.HasOne("DevOps.Models.AppModel.Customer", "Customer")
+                        .WithMany("AppMenus")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.EmailAddress", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserEmailAddress")
-                        .HasForeignKey("AppUserId");
-
-                    b.HasOne("DevOps.Models.AppModel.Customer", null)
+                    b.HasOne("DevOps.Models.AppModel.Customer", "Customer")
                         .WithMany("EmailAddresses")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.Project", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.AppUser", null)
-                        .WithMany("UserProjects")
-                        .HasForeignKey("AppUserId");
-
-                    b.HasOne("DevOps.Models.AppModel.Customer", null)
+                    b.HasOne("DevOps.Models.AppModel.Customer", "Customer")
                         .WithMany("Projects")
-                        .HasForeignKey("CustomerId");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("DevOps.Models.AppModel.ProjectItem", b =>
                 {
-                    b.HasOne("DevOps.Models.AppModel.Project", null)
+                    b.HasOne("DevOps.Models.AppModel.Project", "Project")
                         .WithMany("ProjectItems")
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -619,18 +624,11 @@ namespace DevOps.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DevOps.Models.AppModel.AppUser", b =>
-                {
-                    b.Navigation("UserAddresses");
-
-                    b.Navigation("UserEmailAddress");
-
-                    b.Navigation("UserProjects");
-                });
-
             modelBuilder.Entity("DevOps.Models.AppModel.Customer", b =>
                 {
                     b.Navigation("AddressList");
+
+                    b.Navigation("AppMenus");
 
                     b.Navigation("EmailAddresses");
 

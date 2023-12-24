@@ -24,8 +24,5 @@ namespace DevOps.Models.AppModel
         [Required]
         public DateTime UpdatedDate { get; set; }
 
-        public List<Project> UserProjects { get; set; } = new List<Project>();
-        public List<Address> UserAddresses { get; set; } = new List<Address>();
-        public List<EmailAddress> UserEmailAddress { get; set; } = new List<EmailAddress>();
     }
 }

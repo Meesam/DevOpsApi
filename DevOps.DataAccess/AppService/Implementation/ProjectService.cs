@@ -1,7 +1,7 @@
 ﻿using DevOps.DataAccess.AppService.Interfaces;
 using DevOps.Models.AppModel;
-using DevOps.Models.InputRequestModel;
 using DevOps.Models.Response;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace DevOps.DataAccess.AppService.Implementation
         {
             _context = context;
         }
-        public async Task<ApiResponse<Project>> AddProject(ProjectInput project)
+        public async Task<ApiResponse<Project>> AddProject(Project project)
         {
             await _context.Projects.AddAsync(project);
             SaveChanges();
@@ -31,9 +31,25 @@ namespace DevOps.DataAccess.AppService.Implementation
             throw new NotImplementedException();
         }
 
-        public Task<ApiResponse<IQueryable<Project>>> GetAllProject()
+        public async Task<ApiResponse<List<ProjectResponse>>> GetAllProject()
         {
-            throw new NotImplementedException();
+            var projects = from project in _context.Projects
+                           join customer in _context.Customers on project.CustomerId equals customer.Id
+                           select new ProjectResponse
+                           {
+                               ProjectId = project.Id,
+                               CustomerId = customer.Id,
+                               CustomerName = customer.Name,
+                               ProjectName = project.Name,
+                               ProjectDescription = project.Description,
+                               ProjectType = project.ProjectType,
+                               ProjectStartDate = project.ProjectStartDate,
+                               ProjectEndDate = project.ProjectEndDate,
+                               ProjectStatus = project.ProjectStatus,
+                           };
+            var allProjects = await  projects.ToListAsync();
+            return new ApiResponse<List<ProjectResponse>> { IsSuccess = true, Message = "Project List", StatusCode = 200, Response = allProjects };
+
         }
 
         public Task<ApiResponse<Project>> GetProjectById(int Id)

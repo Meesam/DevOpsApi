@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace DevOps.Models.AppModel
@@ -33,5 +34,10 @@ namespace DevOps.Models.AppModel
         public DateTime? ItemStartDate { get; set; }
 
         public DateTime? ItemEndDate { get; set; }
+
+        public int ProjectId { get; set; }
+
+        [JsonIgnore]
+        public Project? Project { get; set; }
     }
 }

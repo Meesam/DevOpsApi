@@ -26,8 +26,10 @@ namespace DevOps.Models.AppModel
 
         public List<Address> AddressList { get; set; } = new List<Address>();
 
-        public List<EmailAddress> EmailAddresses { get; set; } = new List<EmailAddress>();
+        public List<EmailAddress> EmailAddresses { get; set; } = new List<EmailAddress> { };
 
-        public List<Project> Projects { get; set; } = new List<Project>();
+        public List<Project> Projects { get; set; } = new List<Project> { };
+
+        public List<AppMenu> AppMenus { get; set; } = new List<AppMenu> { };
     }
 }
