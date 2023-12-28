@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DevOps.Models.AppModel
 {
-    public class EmailAddress:DateTimeClass
+    public class Contacts: DateTimeClass
     {
         [Key]
         public int Id { get; set; }
@@ -22,11 +22,20 @@ namespace DevOps.Models.AppModel
         public string? Email { get; set; }
 
         [Required]
-        [MaxLength(20)]
-        public string? EmailType { get; set; }
+        [MaxLength(255)]
+        public string? Street { get; set; }
 
         [Required]
-        public bool IsPrimary { get; set; } = false;
+        [MaxLength(100)]
+        public string? City { get; set; }
+
+        [Required]
+        [MaxLength(20)]
+        public string? State { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string? PostalCode { get; set; }
 
         public int CustomerId { get; set; }
 

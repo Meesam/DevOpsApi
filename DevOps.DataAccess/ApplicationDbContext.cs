@@ -12,9 +12,7 @@ public class ApplicationDbContext: IdentityDbContext<AppUser>
 
     public DbSet<Customer> Customers { get; set; }
 
-    public DbSet<EmailAddress> EmailAddresses { get; set; }
-
-    public DbSet<Address> Address { get; set; }
+    public DbSet<Contacts> Contacts { get; set; }
 
     public DbSet<Project> Projects { get; set; }
 
@@ -32,19 +30,11 @@ public class ApplicationDbContext: IdentityDbContext<AppUser>
             .Property(b => b.UpdatedDate)
             .HasDefaultValueSql("getdate()");
 
-        modelBuilder.Entity<EmailAddress>()
+        modelBuilder.Entity<Contacts>()
                .Property(b => b.CreatedDate)
                .HasDefaultValueSql("getdate()");
 
-        modelBuilder.Entity<EmailAddress>()
-            .Property(b => b.UpdatedDate)
-            .HasDefaultValueSql("getdate()");
-
-        modelBuilder.Entity<Address>()
-              .Property(b => b.CreatedDate)
-              .HasDefaultValueSql("getdate()");
-
-        modelBuilder.Entity<Address>()
+        modelBuilder.Entity<Contacts>()
             .Property(b => b.UpdatedDate)
             .HasDefaultValueSql("getdate()");
 

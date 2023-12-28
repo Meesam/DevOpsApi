@@ -24,9 +24,9 @@ namespace DevOps.Models.AppModel
         [MaxLength(255)]
         public string? LogoUrl { get; set; }
 
-        public List<Address> AddressList { get; set; } = new List<Address>();
+        public string? Description { get; set; }
 
-        public List<EmailAddress> EmailAddresses { get; set; } = new List<EmailAddress> { };
+        public List<Contacts> ContactsList { get; set; } = new List<Contacts>();
 
         public List<Project> Projects { get; set; } = new List<Project> { };
 
