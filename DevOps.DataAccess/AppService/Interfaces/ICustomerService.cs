@@ -1,4 +1,5 @@
 ﻿using DevOps.Models.AppModel;
+using DevOps.Models.InputRequestModel;
 using DevOps.Models.Response;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,7 @@ namespace DevOps.DataAccess.AppService.Interfaces
         Task<ApiResponse<bool>> DeleteCustomer(string id);
         Task<ApiResponse<List<Customer>>> GetAllCustomer();
         Task<ApiResponse<Customer>> GetCustomerById(int Id);
+
+        Task<ApiResponse<CustomerInputModel>> AddCustomerWithContacts(CustomerInputModel customerInputModel);
     }
 }
