@@ -1,5 +1,6 @@
 ﻿using DevOps.DataAccess.AppService.Interfaces;
 using DevOps.Models.AppModel;
+using DevOps.Models.InputRequestModel;
 using DevOps.Models.Response;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,6 +25,26 @@ namespace DevOps.DataAccess.AppService.Implementation
             await _context.Customers.AddAsync(customer);
             SaveChanges();
             return new ApiResponse<Customer> { StatusCode = 200, IsSuccess = true, Message = "Customer added successfully", Response = null };
+        }
+
+        public async Task<ApiResponse<CustomerInputModel>> AddCustomerWithContacts(CustomerInputModel customerInputModel)
+        {
+            if(customerInputModel.CustomerBasicInfo != null)
+            {
+                var newCustomer = customerInputModel.CustomerBasicInfo;
+                var contacts = customerInputModel.CustomerContactsInfo;
+                newCustomer.ContactsList = contacts;
+
+                await _context.Customers.AddAsync(newCustomer);
+                SaveChanges();
+
+                return new ApiResponse<CustomerInputModel> { StatusCode = 200, IsSuccess = true, Message = "Customer added successfully", Response = null };
+                
+            }
+            else
+            {
+                return new ApiResponse<CustomerInputModel> { StatusCode = 500, IsSuccess = false, Message = "Customer basic info can not be null", Response = customerInputModel };
+            }
         }
 
         public Task<ApiResponse<bool>> DeleteCustomer(string id)

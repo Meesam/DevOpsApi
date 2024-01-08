@@ -1,5 +1,6 @@
 ﻿using DevOps.DataAccess.AppService.Interfaces;
 using DevOps.Models.AppModel;
+using DevOps.Models.InputRequestModel;
 using DevOps.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -43,6 +44,27 @@ namespace DevOpsApi.Controllers
                 return Ok(allCustomers);
             }
             return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Failed to get all Customer" });
+        }
+
+        [HttpPost]
+        [Route("addCustomerContacts")]
+        public async Task<IActionResult> AddCustomerWithContacts([FromBody] CustomerInputModel customerInputModel)
+        {
+            if (customerInputModel == null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Failed to get all Customer" });
+            }
+            else
+            {
+              var resp = await _customerService.AddCustomerWithContacts(customerInputModel);
+              if (resp.IsSuccess)
+              {
+                 return Ok(resp);
+              }
+             
+             return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Failed to Create Customer" });
+                
+            }
         }
     }
 }
