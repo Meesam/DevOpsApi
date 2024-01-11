@@ -23,6 +23,9 @@ namespace DevOpsApi.Controllers
 
         [HttpPost]
         [Route("add")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddCustomer([FromBody] Customer customer)
         {
             if (customer == null) { return BadRequest(); }
@@ -36,6 +39,8 @@ namespace DevOpsApi.Controllers
 
         [HttpGet]
         [Route("getAll")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllCustomers()
         {
             var allCustomers = await _customerService.GetAllCustomer();
@@ -48,6 +53,9 @@ namespace DevOpsApi.Controllers
 
         [HttpPost]
         [Route("addCustomerContacts")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddCustomerWithContacts([FromBody] CustomerInputModel customerInputModel)
         {
             if (customerInputModel == null)

@@ -21,19 +21,24 @@ namespace DevOpsApi.Controllers
 
         [HttpPost]
         [Route("project")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddProject([FromBody] Project project)
         {
              if (project == null) { return BadRequest();}
             var projectResp = await _projectService.AddProject(project);
             if (projectResp.IsSuccess)
             {
-                return StatusCode(StatusCodes.Status201Created, new Response { Status = "Success", Message = "Project Created Successfully" });
+                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = "Project Created Successfully" });
             }
             return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Failed to Create Project" });
         }
 
         [HttpGet]
         [Route("getall")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllProject()
         {
             var projectResp = await _projectService.GetAllProject();

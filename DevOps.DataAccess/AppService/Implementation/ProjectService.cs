@@ -39,13 +39,13 @@ namespace DevOps.DataAccess.AppService.Implementation
                            {
                                ProjectId = project.Id,
                                CustomerId = customer.Id,
-                               CustomerName = customer.Name,
-                               ProjectName = project.Name,
-                               ProjectDescription = project.Description,
-                               ProjectType = project.ProjectType,
+                               CustomerName = customer.Name  ?? "NA",
+                               ProjectName = project.Name ?? "NA",
+                               ProjectDescription = project.Description ?? "NA" ,
+                               ProjectType = project.ProjectType ?? "NA",
                                ProjectStartDate = project.ProjectStartDate,
                                ProjectEndDate = project.ProjectEndDate,
-                               ProjectStatus = project.ProjectStatus,
+                               ProjectStatus = project.ProjectStatus ?? "NA",
                            };
             var allProjects = await  projects.ToListAsync();
             return new ApiResponse<List<ProjectResponse>> { IsSuccess = true, Message = "Project List", StatusCode = 200, Response = allProjects };
